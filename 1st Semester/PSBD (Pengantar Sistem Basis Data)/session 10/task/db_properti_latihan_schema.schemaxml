@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_general_ci">db_properti_latihan</database>
+</source>
+<canvas zoom="70">
+<tables>
+<table name="Branch" view="colnames">
+<left>856</left>
+<top>29</top>
+<width>113</width>
+<height>82</height>
+<sql_create_table>CREATE TABLE `Branch` (
+  `branchNo` char(4) NOT NULL,
+  `street` varchar(50) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `postcode` varchar(30) NOT NULL,
+  PRIMARY KEY (`branchNo`),
+  CONSTRAINT `checkBranchNo` CHECK (`branchNo` like 'B00[0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="klien" view="colnames">
+<left>352</left>
+<top>6</top>
+<width>112</width>
+<height>111</height>
+<sql_create_table>CREATE TABLE `klien` (
+  `clientNo` char(4) NOT NULL,
+  `fName` varchar(50) NOT NULL,
+  `lName` varchar(50) NOT NULL,
+  `telNo` varchar(13) NOT NULL,
+  `prefType` enum('Flat','House') NOT NULL,
+  `maxRent` int(3) NOT NULL,
+  PRIMARY KEY (`clientNo`),
+  CONSTRAINT `checkClientNo` CHECK (`clientNo` like 'CR[0-9][0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="PrivateOwner" view="colnames">
+<left>628</left>
+<top>337</top>
+<width>112</width>
+<height>99</height>
+<sql_create_table>CREATE TABLE `PrivateOwner` (
+  `ownerNo` char(4) NOT NULL,
+  `fName` varchar(25) NOT NULL,
+  `lName` varchar(25) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `telNo` varchar(13) NOT NULL,
+  PRIMARY KEY (`ownerNo`),
+  CONSTRAINT `checkOwnerNo` CHECK (`ownerNo` like 'CO[0-9][0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="PropertyForRent" view="colnames">
+<left>104</left>
+<top>274</top>
+<width>112</width>
+<height>155</height>
+<sql_create_table>CREATE TABLE `PropertyForRent` (
+  `propertyNo` char(4) NOT NULL,
+  `street` varchar(100) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `postcode` varchar(50) NOT NULL,
+  `propertyType` enum('House','Flat') NOT NULL,
+  `rooms` int(1) NOT NULL,
+  `rent` int(3) NOT NULL,
+  `ownerNo` char(4) NOT NULL,
+  `staffNo` char(4) NOT NULL,
+  `branchNo` char(4) NOT NULL,
+  PRIMARY KEY (`propertyNo`),
+  KEY `checkPropertyNo` (`propertyNo`),
+  KEY `FK_owner_propery` (`ownerNo`),
+  KEY `FK_staff_propery` (`staffNo`),
+  KEY `FK_branch_propery` (`branchNo`),
+  CONSTRAINT `FK_branch_propery` FOREIGN KEY (`branchNo`) REFERENCES `Branch` (`branchNo`),
+  CONSTRAINT `FK_owner_propery` FOREIGN KEY (`ownerNo`) REFERENCES `PrivateOwner` (`ownerNo`),
+  CONSTRAINT `FK_staff_propery` FOREIGN KEY (`staffNo`) REFERENCES `Staff` (`staffNo`),
+  CONSTRAINT `checkPropertyNo` CHECK (`propertyNo` like 'P[A-Z][0-9][0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="registration" view="colnames">
+<left>104</left>
+<top>147</top>
+<width>112</width>
+<height>88</height>
+<sql_create_table>CREATE TABLE `registration` (
+  `clientNo` char(4) NOT NULL,
+  `branchNo` char(4) NOT NULL,
+  `staffNo` char(4) NOT NULL,
+  `date_joined` date NOT NULL,
+  PRIMARY KEY (`clientNo`,`branchNo`,`staffNo`),
+  KEY `FK_client_regis` (`clientNo`),
+  KEY `FK_branch_regis` (`branchNo`),
+  KEY `FK_staff_regis` (`staffNo`),
+  CONSTRAINT `FK_branch_regis` FOREIGN KEY (`branchNo`) REFERENCES `Branch` (`branchNo`),
+  CONSTRAINT `FK_client_regis` FOREIGN KEY (`clientNo`) REFERENCES `klien` (`clientNo`),
+  CONSTRAINT `FK_staff_regis` FOREIGN KEY (`staffNo`) REFERENCES `Staff` (`staffNo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="Staff" view="colnames">
+<left>651</left>
+<top>179</top>
+<width>112</width>
+<height>124</height>
+<sql_create_table>CREATE TABLE `Staff` (
+  `staffNo` char(4) NOT NULL,
+  `fName` varchar(20) NOT NULL,
+  `lName` varchar(20) NOT NULL,
+  `staffPosition` enum('Manager','Assistant','Supervisor') NOT NULL,
+  `sex` enum('M','F') NOT NULL,
+  `DOB` date NOT NULL,
+  `salary` decimal(10,0) NOT NULL DEFAULT 0,
+  `branchNo` char(4) NOT NULL,
+  PRIMARY KEY (`staffNo`),
+  KEY `branchNo` (`branchNo`),
+  KEY `FK_branch` (`branchNo`),
+  KEY `checkStaffNo` (`staffNo`),
+  CONSTRAINT `FK_branch` FOREIGN KEY (`branchNo`) REFERENCES `Branch` (`branchNo`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `checkStaffNo` CHECK (`staffNo` like 'S[A-Z][0-9][0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="viewing" view="colnames">
+<left>107</left>
+<top>26</top>
+<width>112</width>
+<height>88</height>
+<sql_create_table>CREATE TABLE `viewing` (
+  `clientNo` char(4) NOT NULL,
+  `propertyNo` char(4) NOT NULL,
+  `viewDate` date NOT NULL,
+  `clientComment` varchar(255) NOT NULL,
+  PRIMARY KEY (`clientNo`,`propertyNo`),
+  KEY `FK_client_view` (`clientNo`),
+  KEY `FK_property_view` (`propertyNo`),
+  CONSTRAINT `FK_client_view` FOREIGN KEY (`clientNo`) REFERENCES `klien` (`clientNo`),
+  CONSTRAINT `FK_property_view` FOREIGN KEY (`propertyNo`) REFERENCES `PropertyForRent` (`propertyNo`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>

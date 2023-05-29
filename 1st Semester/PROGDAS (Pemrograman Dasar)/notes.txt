@@ -1,0 +1,3 @@
+Dosen meniadakan UTS, UAS, Tugas & Absen.
+Diganti dengan membuat jurnal, bare minimumnya tentang algoritma k-means.
+Namun, kamu membuat jurnal sentimen menggunakan NLP

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemadesigner version="6.5">
+<source>
+<database charset="utf8mb4" collation="utf8mb4_general_ci">penjualan</database>
+</source>
+<canvas zoom="100">
+<tables>
+<table name="detail_pesan" view="colnames">
+<left>769</left>
+<top>38</top>
+<width>112</width>
+<height>126</height>
+<sql_create_table>CREATE TABLE `detail_pesan` (
+  `idpesan` char(8) NOT NULL,
+  `idproduk` char(5) NOT NULL,
+  `jumlah` int(5) NOT NULL DEFAULT 0,
+  `subtotal` decimal(10,0) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idpesan`,`idproduk`),
+  KEY `FK_detail_pesan` (`idproduk`),
+  KEY `FK_detail_pesan2` (`idpesan`),
+  CONSTRAINT `FK_detail_pesan` FOREIGN KEY (`idproduk`) REFERENCES `produk` (`idproduk`),
+  CONSTRAINT `FK_detail_pesan2` FOREIGN KEY (`idpesan`) REFERENCES `pesan` (`idpesan`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="faktur" view="colnames">
+<left>25</left>
+<top>233</top>
+<width>112</width>
+<height>110</height>
+<sql_create_table>CREATE TABLE `faktur` (
+  `id_faktur` char(9) NOT NULL,
+  `idpesan` char(8) NOT NULL,
+  `tgl_faktur` date NOT NULL,
+  PRIMARY KEY (`id_faktur`),
+  KEY `fk_faktur` (`idpesan`),
+  CONSTRAINT `fk_faktur` FOREIGN KEY (`idpesan`) REFERENCES `pesan` (`idpesan`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="kuitansi" view="colnames">
+<left>186</left>
+<top>33</top>
+<width>112</width>
+<height>134</height>
+<sql_create_table>CREATE TABLE `kuitansi` (
+  `id_kuitansi` char(5) NOT NULL,
+  `id_faktur` char(9) NOT NULL,
+  `tgl_kuitansi` date NOT NULL,
+  PRIMARY KEY (`id_kuitansi`),
+  KEY `FK_kuitansi` (`id_faktur`),
+  CONSTRAINT `FK_kuitansi` FOREIGN KEY (`id_faktur`) REFERENCES `faktur` (`id_faktur`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="pelanggan" view="colnames">
+<left>339</left>
+<top>266</top>
+<width>115</width>
+<height>142</height>
+<sql_create_table>CREATE TABLE `pelanggan` (
+  `idpelanggan` char(5) NOT NULL,
+  `namapelanggan` varchar(30) NOT NULL,
+  `alamat` text NOT NULL,
+  `telepon` varchar(15) NOT NULL,
+  `email` varchar(20) NOT NULL,
+  PRIMARY KEY (`idpelanggan`),
+  CONSTRAINT `checkidplg` CHECK (`idpelanggan` like 'PL[0-9][0-9][0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="pesan" view="colnames">
+<left>492</left>
+<top>80</top>
+<width>112</width>
+<height>110</height>
+<sql_create_table>CREATE TABLE `pesan` (
+  `idpesan` char(8) NOT NULL,
+  `idpelanggan` char(5) NOT NULL,
+  `tglpesan` date NOT NULL,
+  PRIMARY KEY (`idpesan`),
+  KEY `idpelanggan` (`idpelanggan`),
+  CONSTRAINT `pesan` FOREIGN KEY (`idpelanggan`) REFERENCES `pelanggan` (`idpelanggan`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+<table name="produk" view="colnames">
+<left>643</left>
+<top>223</top>
+<width>112</width>
+<height>142</height>
+<sql_create_table>CREATE TABLE `produk` (
+  `idproduk` char(5) NOT NULL,
+  `namaproduk` varchar(30) NOT NULL,
+  `satuan` enum('Pcs','Unit','Rim','Pack') NOT NULL,
+  `harga` decimal(10,0) NOT NULL DEFAULT 0,
+  `stok` int(3) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`idproduk`),
+  CONSTRAINT `checkidproduk` CHECK (`idproduk` like 'BR[0-9][0-9][0-9]')
+) ENGINE=InnoDB DEFAULT CHARSET=latin1</sql_create_table>
+</table>
+</tables>
+</canvas>
+</schemadesigner>
